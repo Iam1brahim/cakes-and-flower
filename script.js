@@ -8,8 +8,8 @@ var FALLBACK=[
  {id:'mixed',cat:'Bouquets',name:'Premium Mixed',price:399,desc:'A full arrangement of roses, lilies and seasonal blooms.',bg:'#eadcf0',c:'#b57bc4',c2:'#e48aa5',n:9},
  {id:'cake1',cat:'Cakes',name:'Chocolate Truffle Cream Cake',price:399,desc:'Half kg chocolate truffle cake with cream swirls.',img:'images/cake1.jpg'},
  {id:'cake2',cat:'Cakes',name:'Chocolate Indulgence Cake',price:995,desc:'Layered chocolate cake with ridged ganache.',img:'images/cake2.jpg'},
- {id:'cake3',cat:'Cakes',name:'Eggless Truffle Cake',price:800,desc:'Eggless chocolate truffle cake with a praline lace top.',img:'images/cake3.jpg'},
- {id:'cake4',cat:'Cakes',name:'Ganache Truffle Cake',price:945,desc:'Dark chocolate ganache drip with wafer decorations.',img:'images/cake4.jpg'},
+ {id:'cake3',cat:'Cakes',name:'Eggless Truffle Cake',price:400,desc:'Eggless chocolate truffle cake with a praline lace top.',img:'images/cake3.jpg'},
+ {id:'cake4',cat:'Cakes',name:'Ganache Truffle Cake',price:445,desc:'Dark chocolate ganache drip with wafer decorations.',img:'images/cake4.jpg'},
  {id:'cake5',cat:'Cakes',name:'Delicious Truffle Cake',price:535,desc:'Glossy chocolate truffle cake with a chocolate rim.',img:'images/cake5.jpg'}
 ];
 var items=[],cart={},current='All';
