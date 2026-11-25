@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Petal &amp; Stem – Fresh bouquets and cakes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="logo">Petal &amp; Stem</div>
+    <div class="nav"><a href="#order">Your order (<span id="count">0</span>)</a></div>
+  </header>
+
+  <div class="hero">
+    <div>
+      <h1>Fresh bouquets, hand-tied and delivered across <span class="city">Mumbai</span>.</h1>
+      <p>Choose a bouquet, add a message card, and send your order to us on WhatsApp. We confirm the delivery time with you there.</p>
+      <a class="btn" href="#bouquets">Browse the collection</a>
+    </div>
+    <svg viewBox="0 0 200 220" aria-hidden="true" id="heroArt"></svg>
+  </div>
+
+  <section id="bouquets" style="padding-top:12px">
+    <h2>Our collection</h2>
+    <p class="sub">Everything is made fresh for your delivery date.</p>
+    <div class="tabs" id="tabs"></div>
+    <div class="grid" id="grid"></div>
+  </section>
+
+  <section id="order">
+    <h2>Your order</h2>
+    <p class="sub">Fill in the details and we’ll receive your order on WhatsApp.</p>
+    <div class="order">
+      <div class="panel">
+        <div id="cart"></div>
+      </div>
+      <div class="panel">
+        <label for="name">Your name</label>
+        <input id="name" autocomplete="name">
+        <label for="phone">Your phone number</label>
+        <input id="phone" type="tel" inputmode="tel" autocomplete="tel">
+        <label for="addr">Delivery address in <span class="city">Mumbai</span></label>
+        <textarea id="addr" autocomplete="street-address"></textarea>
+        <div class="two">
+          <div><label for="date">Delivery date</label><input id="date" type="date"></div>
+          <div><label for="pin">Pincode</label><input id="pin" inputmode="numeric" maxlength="6" autocomplete="postal-code"></div>
+        </div>
+        <label for="msg">Message for the card (optional)</label>
+        <textarea id="msg"></textarea>
+        <p class="note">We deliver in <span class="city">Mumbai</span> only, and orders need at least <span class="lead">3</span> days’ notice. Payment is arranged with us on WhatsApp.</p>
+        <p class="err" id="err" role="alert"></p>
+        <p class="note">WhatsApp will open with your order ready. Press Send there to place it.</p>
+        <button class="btn wa" id="send">Continue on WhatsApp to place order</button>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <span>Petal &amp; Stem · <span class="city">Mumbai</span></span>
+    <span>WhatsApp: <a id="waLink" href="#"></a></span>
+  </footer>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="config.js"></script>
+<script src="script.js"></script>
+</body>
+</html>
