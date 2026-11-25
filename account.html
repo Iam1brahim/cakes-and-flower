@@ -26,6 +26,10 @@
       <input id="a_name" autocomplete="name">
       <label for="a_phone">Mobile number</label>
       <input id="a_phone" type="tel" inputmode="tel" autocomplete="tel">
+      <label for="a_addr">Delivery address</label>
+      <textarea id="a_addr" autocomplete="street-address"></textarea>
+      <label for="a_pin">Pincode</label>
+      <input id="a_pin" inputmode="numeric" maxlength="6" autocomplete="postal-code">
     </div>
     <label for="a_email">Email</label>
     <input id="a_email" type="email" autocomplete="username">
@@ -47,6 +51,18 @@
   <div id="acctBox" hidden>
     <div class="adm-card">
       <div class="adm-bar"><div><h2 id="who">My orders</h2><p class="sub" id="mail" style="margin:0"></p></div><button class="btn ghost sm" id="logout">Log out</button></div>
+    </div>
+    <div class="adm-card">
+      <h2>My details</h2>
+      <p class="sub">We use these to fill in your orders. Change them any time.</p>
+      <div class="adm-form">
+        <div><label for="d_name">Name</label><input id="d_name" autocomplete="name"></div>
+        <div><label for="d_phone">Mobile number</label><input id="d_phone" type="tel" inputmode="tel" autocomplete="tel"></div>
+        <div class="full"><label for="d_addr">Delivery address</label><textarea id="d_addr" autocomplete="street-address"></textarea></div>
+        <div><label for="d_pin">Pincode</label><input id="d_pin" inputmode="numeric" maxlength="6" autocomplete="postal-code"></div>
+      </div>
+      <p class="adm-msg" id="dmsg" role="status"></p>
+      <button class="btn" id="saveDetails">Save details</button>
     </div>
     <div class="adm-card">
       <h2>My orders</h2>

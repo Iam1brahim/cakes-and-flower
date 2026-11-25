@@ -2,6 +2,8 @@ var CFG=window.CFG,SB=window.SB;
 var $=function(i){return document.getElementById(i)};
 function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
 function fmt(n){return '\u20b9'+Number(n).toLocaleString('en-IN')}
+function validPin(p){return /^\d{6}$/.test(p)&&p.indexOf(CFG.PIN_PREFIX)===0}
+function normPhone(s){return s.replace(/[\s\-()]/g,'').replace(/^(\+91|91|0)(?=\d{10}$)/,'')}
 function say(id,t,bad){var e=$(id);e.textContent=t;e.className='adm-msg'+(bad?' bad':'')}
 function view(v){$('authBox').hidden=v!=='auth';$('resetBox').hidden=v!=='reset';$('acctBox').hidden=v!=='acct'}
 
@@ -22,6 +24,8 @@ function setMode(m){
 $('tabLogin').onclick=function(){setMode('login')};
 $('tabSignup').onclick=function(){setMode('signup')};
 $('a_phone').addEventListener('input',function(){this.value=this.value.replace(/[^\d+\s\-]/g,'')});
+$('d_phone').addEventListener('input',function(){this.value=this.value.replace(/[^\d+\s\-]/g,'')});
+['a_pin','d_pin'].forEach(function(i){$(i).addEventListener('input',function(){this.value=this.value.replace(/\D/g,'')})});
 
 if(!SB){
   view('auth');say('amsg','The shop is not connected to its database yet.',true);$('doAuth').disabled=true;
@@ -45,7 +49,10 @@ $('doAuth').onclick=async function(){
     if(!name){say('amsg','Please enter your name.',true);btn.disabled=false;return}
     if(!/^[6-9]\d{9}$/.test(ph)){say('amsg','Please enter a valid 10-digit mobile number.',true);btn.disabled=false;return}
     if(pass.length<8){say('amsg','Use a password with at least 8 characters.',true);btn.disabled=false;return}
-    r=await SB.auth.signUp({email:email,password:pass,options:{data:{name:name,phone:ph}}});
+    var addr=$('a_addr').value.trim(),pin=$('a_pin').value.trim();
+    if(!addr){say('amsg','Please enter your delivery address.',true);btn.disabled=false;return}
+    if(!validPin(pin)){say('amsg','Enter a valid 6-digit '+CFG.CITY+' pincode.',true);btn.disabled=false;return}
+    r=await SB.auth.signUp({email:email,password:pass,options:{data:{name:name,phone:ph,address:addr,pin:pin}}});
   }
   btn.disabled=false;
   if(r.error){say('amsg',r.error.message,true);return}
@@ -78,6 +85,7 @@ async function openAccount(u){
   var m=u.user_metadata||{};
   $('who').textContent=m.name?'Hi, '+m.name:'Welcome';
   $('mail').textContent=u.email;
+  $('d_name').value=m.name||'';$('d_phone').value=m.phone||'';$('d_addr').value=m.address||'';$('d_pin').value=m.pin||'';
   view('acct');
   var r=await SB.from('orders').select('*').eq('user_id',u.id).order('created_at',{ascending:false});
   var box=$('orders');
@@ -95,3 +103,18 @@ async function openAccount(u){
       +'<a class="ord-wa" href="'+wa+'" target="_blank" rel="noopener">Ask about this order on WhatsApp</a></div>';
   }).join('');
 }
+
+// ---------- My details ----------
+$('saveDetails').onclick=async function(){
+  var name=$('d_name').value.trim(),ph=normPhone($('d_phone').value),addr=$('d_addr').value.trim(),pin=$('d_pin').value.trim();
+  if(!name){say('dmsg','Please enter your name.',true);return}
+  if(!/^[6-9]\d{9}$/.test(ph)){say('dmsg','Please enter a valid 10-digit mobile number.',true);return}
+  if(!addr){say('dmsg','Please enter your delivery address.',true);return}
+  if(!validPin(pin)){say('dmsg','Enter a valid 6-digit '+CFG.CITY+' pincode.',true);return}
+  this.disabled=true;say('dmsg','Saving...');
+  var r=await SB.auth.updateUser({data:{name:name,phone:ph,address:addr,pin:pin}});
+  this.disabled=false;
+  if(r.error){say('dmsg',r.error.message,true);return}
+  $('who').textContent='Hi, '+name;
+  say('dmsg','Saved. These will be filled in on your next order.');
+};

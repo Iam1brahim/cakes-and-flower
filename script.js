@@ -133,6 +133,9 @@ function paint(){
     var m=user.user_metadata||{},n=document.getElementById('name'),p=document.getElementById('phone');
     if(!n.value&&m.name)n.value=m.name;
     if(!p.value&&m.phone)p.value=m.phone;
+    var a=document.getElementById('addr'),z=document.getElementById('pin');
+    if(!a.value&&m.address)a.value=m.address;
+    if(!z.value&&m.pin)z.value=m.pin;
   }
 }
 if(SB){
