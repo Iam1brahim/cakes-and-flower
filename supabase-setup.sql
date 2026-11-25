@@ -1,51 +1,80 @@
--- Petal & Stem: database setup. Paste into Supabase > SQL Editor and press Run.
--- BEFORE RUNNING: replace every  khaleel.ibrm@gmail.com  below with the email you will log in with (6 places).
+-- Petal & Stem: customer orders. Supabase > SQL Editor > New query > paste > Run.
+-- Run this AFTER supabase-setup.sql.
+-- BEFORE RUNNING: Find and Replace ALL  khaleel.ibrm@gmail.com  with the same admin email you used before.
 
-create table if not exists public.products (
-  id          uuid primary key default gen_random_uuid(),
-  name        text    not null,
-  category    text    not null default 'Bouquets',
-  price       integer not null check (price >= 0),
-  description text    default '',
-  image_url   text,
-  active      boolean not null default true,
-  sort        integer not null default 0,
-  created_at  timestamptz not null default now()
+create table if not exists public.orders (
+  id            uuid primary key default gen_random_uuid(),
+  user_id       uuid not null references auth.users(id) on delete cascade,
+  created_at    timestamptz not null default now(),
+  status        text not null default 'New'
+                check (status in ('New','Confirmed','Out for delivery','Delivered','Cancelled')),
+  items         jsonb not null,
+  total         integer not null,
+  customer_name text not null,
+  phone         text not null,
+  address       text not null,
+  pincode       text not null,
+  delivery_date date not null,
+  message       text default ''
 );
+create index if not exists orders_user_idx on public.orders (user_id, created_at desc);
 
-alter table public.products enable row level security;
+alter table public.orders enable row level security;
 
--- Customers (not logged in) can see only products marked active
-create policy "Public can read active products" on public.products
-  for select to anon, authenticated using (active = true);
+drop policy if exists "Customers read own orders" on public.orders;
+drop policy if exists "Admin reads all orders" on public.orders;
+drop policy if exists "Admin updates orders" on public.orders;
 
--- Only your admin email can see hidden products and change anything
-create policy "Admin reads all" on public.products
+-- A customer can read only their own orders
+create policy "Customers read own orders" on public.orders
+  for select to authenticated using (user_id = auth.uid());
+-- Only the admin email can read everyone's orders and change their status
+create policy "Admin reads all orders" on public.orders
   for select to authenticated using ((auth.jwt() ->> 'email') = 'khaleel.ibrm@gmail.com');
-create policy "Admin inserts" on public.products
-  for insert to authenticated with check ((auth.jwt() ->> 'email') = 'khaleel.ibrm@gmail.com');
-create policy "Admin updates" on public.products
+create policy "Admin updates orders" on public.orders
   for update to authenticated using ((auth.jwt() ->> 'email') = 'khaleel.ibrm@gmail.com')
   with check ((auth.jwt() ->> 'email') = 'khaleel.ibrm@gmail.com');
-create policy "Admin deletes" on public.products
-  for delete to authenticated using ((auth.jwt() ->> 'email') = 'khaleel.ibrm@gmail.com');
 
--- Photo storage (public so customers can see photos; only admin can upload or delete)
-insert into storage.buckets (id, name, public) values ('product-images', 'product-images', true)
-  on conflict (id) do nothing;
+-- Table permissions (needed in addition to the rules above)
+grant select on public.orders to authenticated;
+grant update (status) on public.orders to authenticated;
 
-create policy "Public can view product images" on storage.objects
-  for select using (bucket_id = 'product-images');
-create policy "Admin uploads images" on storage.objects
-  for insert to authenticated with check (bucket_id = 'product-images' and (auth.jwt() ->> 'email') = 'khaleel.ibrm@gmail.com');
-create policy "Admin updates images" on storage.objects
-  for update to authenticated using (bucket_id = 'product-images' and (auth.jwt() ->> 'email') = 'khaleel.ibrm@gmail.com');
-create policy "Admin deletes images" on storage.objects
-  for delete to authenticated using (bucket_id = 'product-images' and (auth.jwt() ->> 'email') = 'khaleel.ibrm@gmail.com');
+-- Orders are created only through this function. It looks up prices itself, so a customer
+-- cannot change prices or totals from their browser.
+create or replace function public.place_order(
+  p_items jsonb, p_name text, p_phone text, p_address text,
+  p_pin text, p_date date, p_message text
+) returns jsonb
+language plpgsql security definer set search_path = public as $$
+declare
+  v_uid uuid := auth.uid();
+  v_items jsonb; v_total integer; v_n integer; v_id uuid; v_created timestamptz;
+begin
+  if v_uid is null then raise exception 'Please log in to place an order.'; end if;
+  if p_items is null or jsonb_typeof(p_items) <> 'array' or jsonb_array_length(p_items) = 0 then
+    raise exception 'Your order is empty.'; end if;
+  if coalesce(trim(p_name), '') = '' or coalesce(trim(p_address), '') = '' then
+    raise exception 'Name and address are required.'; end if;
+  if p_phone !~ '^[6-9][0-9]{9}$' then raise exception 'Enter a valid 10-digit mobile number.'; end if;
+  if p_pin !~ '^[0-9]{6}$' then raise exception 'Enter a valid 6-digit pincode.'; end if;
+  if p_date is null or p_date < current_date then raise exception 'Choose a valid delivery date.'; end if;
 
--- Starting products (edit or delete them later in the admin page; add photos there too)
-insert into public.products (name, category, price, description, sort) values
-  ('Rose Classic',   'Bouquets', 699,  'A dozen pink roses wrapped in soft kraft paper.', 1),
-  ('Tulip Delight',  'Bouquets', 999,  'Fresh tulips in spring shades, tied with a satin ribbon.', 2),
-  ('Sunflower Joy',  'Bouquets', 599,  'Bright sunflowers with greens for a cheerful hello.', 3),
-  ('Premium Mixed',  'Bouquets', 1499, 'A full arrangement of roses, lilies and seasonal blooms.', 4);
+  select jsonb_agg(jsonb_build_object('product_id', p.id, 'name', p.name, 'price', p.price, 'qty', q.qty) order by p.name),
+         sum(p.price * q.qty)::integer, count(*)
+    into v_items, v_total, v_n
+  from jsonb_to_recordset(p_items) as q(id uuid, qty integer)
+  join public.products p on p.id = q.id and p.active
+  where q.qty between 1 and 50;
+
+  if v_items is null or v_n <> jsonb_array_length(p_items) then
+    raise exception 'Some items are no longer available. Please refresh the page.'; end if;
+
+  insert into public.orders (user_id, items, total, customer_name, phone, address, pincode, delivery_date, message)
+  values (v_uid, v_items, v_total, left(trim(p_name), 100), p_phone, left(trim(p_address), 500), p_pin, p_date, left(coalesce(p_message, ''), 300))
+  returning id, created_at into v_id, v_created;
+
+  return jsonb_build_object('id', v_id, 'total', v_total, 'items', v_items, 'created_at', v_created);
+end $$;
+
+revoke all on function public.place_order(jsonb, text, text, text, text, date, text) from public, anon;
+grant execute on function public.place_order(jsonb, text, text, text, text, date, text) to authenticated;
