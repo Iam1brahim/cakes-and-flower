@@ -1,6 +1,6 @@
 -- Petal & Stem: customer orders. Supabase > SQL Editor > New query > paste > Run.
 -- Run this AFTER supabase-setup.sql.
--- BEFORE RUNNING: Find and Replace ALL  YOUR_ADMIN_EMAIL  with the same admin email you used before.
+-- BEFORE RUNNING: Find and Replace ALL  khaleel.ibrm@gmail.com  with the same admin email you used before.
 
 create table if not exists public.orders (
   id            uuid primary key default gen_random_uuid(),
@@ -30,10 +30,10 @@ create policy "Customers read own orders" on public.orders
   for select to authenticated using (user_id = auth.uid());
 -- Only the admin email can read everyone's orders and change their status
 create policy "Admin reads all orders" on public.orders
-  for select to authenticated using ((auth.jwt() ->> 'email') = 'YOUR_ADMIN_EMAIL');
+  for select to authenticated using ((auth.jwt() ->> 'email') = 'khaleel.ibrm@gmail.com');
 create policy "Admin updates orders" on public.orders
-  for update to authenticated using ((auth.jwt() ->> 'email') = 'YOUR_ADMIN_EMAIL')
-  with check ((auth.jwt() ->> 'email') = 'YOUR_ADMIN_EMAIL');
+  for update to authenticated using ((auth.jwt() ->> 'email') = 'khaleel.ibrm@gmail.com')
+  with check ((auth.jwt() ->> 'email') = 'khaleel.ibrm@gmail.com');
 
 -- Table permissions (needed in addition to the rules above)
 grant select on public.orders to authenticated;
