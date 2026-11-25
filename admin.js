@@ -24,7 +24,7 @@ $('logout').onclick=async function(){await sb.auth.signOut();show(false)};
 async function load(){
   var r=await sb.from('products').select('*').order('sort').order('created_at');
   if(r.error){msg('Could not load products: '+r.error.message,true);return}
-  rows=r.data||[];draw();
+  rows=r.data||[];draw();loadOrders();
 }
 function draw(){
   var cats=[];rows.forEach(function(p){if(p.category&&cats.indexOf(p.category)<0)cats.push(p.category)});
@@ -119,3 +119,31 @@ $('save').onclick=async function(){
   }catch(err){msg('Error: '+(err.message||err),true)}
   $('save').disabled=false;
 };
+
+// ---------- customer orders ----------
+var STATUSES=['New','Confirmed','Out for delivery','Delivered','Cancelled'];
+function rupee(n){return '\u20b9'+Number(n).toLocaleString('en-IN')}
+async function loadOrders(){
+  var el=$('orders');
+  var r=await sb.from('orders').select('*').order('created_at',{ascending:false}).limit(50);
+  if(r.error){el.innerHTML='<p class="empty">Orders are not set up yet. Run orders-setup.sql in Supabase. ('+esc(r.error.message)+')</p>';return}
+  if(!r.data.length){el.innerHTML='<p class="empty">No orders yet.</p>';return}
+  var D=function(s){return new Date(s).toLocaleString('en-IN',{day:'numeric',month:'short',hour:'numeric',minute:'2-digit'})};
+  el.innerHTML=r.data.map(function(o){
+    var ref=String(o.id).slice(0,8).toUpperCase();
+    var lines=(o.items||[]).map(function(i){return '<div class="ord-line"><span>'+esc(i.qty)+' \u00d7 '+esc(i.name)+'</span><span>'+rupee(i.qty*i.price)+'</span></div>'}).join('');
+    var opts=STATUSES.map(function(s){return '<option'+(s===o.status?' selected':'')+'>'+s+'</option>'}).join('');
+    return '<div class="ord" data-id="'+o.id+'"><div class="ord-h"><strong>#'+ref+'</strong><span class="ord-sub" style="margin:0">'+D(o.created_at)+'</span><select class="st" aria-label="Status of order '+ref+'">'+opts+'</select></div>'
+      +'<div class="ord-sub"><strong>'+esc(o.customer_name)+'</strong> \u00b7 <a href="tel:'+esc(o.phone)+'">'+esc(o.phone)+'</a> \u00b7 <a href="https://wa.me/91'+esc(o.phone)+'" target="_blank" rel="noopener">WhatsApp</a></div>'
+      +'<div class="ord-sub">Deliver on <strong>'+esc(o.delivery_date)+'</strong> to '+esc(o.address)+', '+esc(o.pincode)+(o.message?'<br>Card message: '+esc(o.message):'')+'</div>'
+      +lines+'<div class="ord-line ord-total"><span>Total</span><span>'+rupee(o.total)+'</span></div></div>';
+  }).join('');
+}
+$('refreshOrders').onclick=loadOrders;
+$('orders').addEventListener('change',async function(e){
+  if(!e.target.classList.contains('st'))return;
+  var id=e.target.closest('.ord').getAttribute('data-id');
+  var r=await sb.from('orders').update({status:e.target.value}).eq('id',id);
+  if(r.error){msg('Could not update status: '+r.error.message,true);loadOrders();return}
+  msg('Order status updated.');
+});
