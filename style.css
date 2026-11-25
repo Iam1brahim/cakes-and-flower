@@ -112,3 +112,8 @@ footer a{color:var(--rose-d)}
 .ord-total{font-weight:600;border-top:1px solid var(--line);margin-top:6px;padding-top:8px}
 .ord-wa{color:var(--rose-d);font-weight:600;font-size:14.5px}
 .ord select{font:600 14px var(--sans);color:var(--ink);background:var(--bg);border:1.5px solid var(--line);border-radius:999px;padding:6px 12px}
+
+/* ---------- search ---------- */
+.sr{position:absolute;left:-9999px}
+.search{margin:0 0 14px;max-width:420px}
+.search input{margin:0;border-radius:999px;padding:11px 18px;background:var(--surface)}
