@@ -2,11 +2,11 @@ var CFG=window.CFG;
 var HERO={bg:'#eadcf0',c:'#b57bc4',c2:'#e48aa5',n:9};
 // Shown only if the database is not set up yet (or cannot be reached). Once Supabase is connected, use /admin.html instead.
 var FALLBACK=[
- {id:'rose',cat:'Bouquets',name:'Rose Classic',price:699,desc:'A dozen pink roses wrapped in soft kraft paper.',bg:'#f6d3da',c:'#d9627f',c2:'#f08aa3',n:7},
- {id:'tulip',cat:'Bouquets',name:'Tulip Delight',price:999,desc:'Fresh tulips in spring shades, tied with a satin ribbon.',bg:'#f9e2d6',c:'#e8788f',c2:'#f4a9b5',n:6},
- {id:'sun',cat:'Bouquets',name:'Sunflower Joy',price:599,desc:'Bright sunflowers with greens for a cheerful hello.',bg:'#fbebc9',c:'#f2b632',c2:'#e39a1d',n:5},
- {id:'mixed',cat:'Bouquets',name:'Premium Mixed',price:1499,desc:'A full arrangement of roses, lilies and seasonal blooms.',bg:'#eadcf0',c:'#b57bc4',c2:'#e48aa5',n:9},
- {id:'cake1',cat:'Cakes',name:'Chocolate Truffle Cream Cake',price:599,desc:'Half kg chocolate truffle cake with cream swirls.',img:'images/cake1.jpg'},
+ {id:'rose',cat:'Bouquets',name:'Rose Classic',price:399,desc:'A dozen pink roses wrapped in soft kraft paper.',bg:'#f6d3da',c:'#d9627f',c2:'#f08aa3',n:7},
+ {id:'tulip',cat:'Bouquets',name:'Tulip Delight',price:399,desc:'Fresh tulips in spring shades, tied with a satin ribbon.',bg:'#f9e2d6',c:'#e8788f',c2:'#f4a9b5',n:6},
+ {id:'sun',cat:'Bouquets',name:'Sunflower Joy',price:399,desc:'Bright sunflowers with greens for a cheerful hello.',bg:'#fbebc9',c:'#f2b632',c2:'#e39a1d',n:5},
+ {id:'mixed',cat:'Bouquets',name:'Premium Mixed',price:399,desc:'A full arrangement of roses, lilies and seasonal blooms.',bg:'#eadcf0',c:'#b57bc4',c2:'#e48aa5',n:9},
+ {id:'cake1',cat:'Cakes',name:'Chocolate Truffle Cream Cake',price:399,desc:'Half kg chocolate truffle cake with cream swirls.',img:'images/cake1.jpg'},
  {id:'cake2',cat:'Cakes',name:'Chocolate Indulgence Cake',price:995,desc:'Layered chocolate cake with ridged ganache.',img:'images/cake2.jpg'},
  {id:'cake3',cat:'Cakes',name:'Eggless Truffle Cake',price:800,desc:'Eggless chocolate truffle cake with a praline lace top.',img:'images/cake3.jpg'},
  {id:'cake4',cat:'Cakes',name:'Ganache Truffle Cake',price:945,desc:'Dark chocolate ganache drip with wafer decorations.',img:'images/cake4.jpg'},
