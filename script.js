@@ -3,7 +3,7 @@ var CFG=window.CFG,SB=window.SB;
 var REQUIRE=CFG.REQUIRE_LOGIN!==false&&!!SB;
 var HERO={bg:'#eadcf0',c:'#b57bc4',c2:'#e48aa5',n:9};
 var FALLBACK=[]; // on purpose: the shop shows only what is in your database
-var items=[],cart={},current='All',user=null;
+var items=[],cart={},current='All',user=null,query='';
 function fmt(n){return '\u20b9'+Number(n).toLocaleString('en-IN')}
 function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
 function saveCart(){try{localStorage.setItem('ps_cart',JSON.stringify(cart))}catch(e){}}
@@ -45,14 +45,16 @@ function showGrid(){
   var c=['All'];items.forEach(function(i){if(c.indexOf(i.cat)<0)c.push(i.cat)});
   if(c.indexOf(current)<0)current='All';
   tabs.innerHTML=c.length>2?c.map(function(x){return '<button data-cat="'+esc(x)+'" aria-pressed="'+(x===current)+'">'+esc(x)+'</button>'}).join(''):'';
-  grid.innerHTML=items.length?'':'<p class="empty">Our menu is being updated. Please check back soon or message us on WhatsApp.</p>';
-  items.filter(function(i){return current==='All'||i.cat===current}).forEach(function(it){
+  var shown=items.filter(function(i){return (current==='All'||i.cat===current)&&(!query||(i.name+' '+i.desc+' '+i.cat).toLowerCase().indexOf(query)>-1)});
+  grid.innerHTML=!items.length?'<p class="empty">Our menu is being updated. Please check back soon or message us on WhatsApp.</p>':(!shown.length?'<p class="empty">Nothing matches your search. Try another word or clear the search box.</p>':'');
+  shown.forEach(function(it){
     var d=document.createElement('div');d.className='card';
     var pic=it.img?'<div class="art photo"><img src="'+esc(it.img)+'" alt="'+esc(it.name)+'" loading="lazy"></div>':'<div class="art" style="background:'+it.bg+'">'+art(it)+'</div>';
     d.innerHTML=pic+'<div class="body"><h3>'+esc(it.name)+'</h3><p class="desc">'+esc(it.desc)+'</p><div class="row"><span class="price">'+fmt(it.price)+'</span><button class="add" data-id="'+esc(it.id)+'">Add to order</button></div></div>';
     grid.appendChild(d);
   });
 }
+document.getElementById('q').addEventListener('input',function(){query=this.value.trim().toLowerCase();if(query)current='All';showGrid()});
 tabs.addEventListener('click',function(e){var c=e.target.getAttribute('data-cat');if(c){current=c;showGrid()}});
 grid.addEventListener('click',function(e){var id=e.target.getAttribute('data-id');if(id){document.getElementById('done').hidden=true;cart[id]=(cart[id]||0)+1;render();e.target.textContent='Added';setTimeout(function(){e.target.textContent='Add to order'},900)}});
 function total(){var t=0;items.forEach(function(i){t+=(cart[i.id]||0)*i.price});return t}
