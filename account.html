@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>My account – Petal &amp; Stem</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="logo">Petal &amp; Stem</div>
+    <div class="nav"><a href="index.html">Back to shop</a></div>
+  </header>
+
+  <div id="authBox" class="adm-card adm-login" hidden>
+    <div class="tabs">
+      <button id="tabLogin" aria-pressed="true">Log in</button>
+      <button id="tabSignup" aria-pressed="false">Sign up</button>
+    </div>
+    <div id="signupOnly" hidden>
+      <label for="a_name">Your name</label>
+      <input id="a_name" autocomplete="name">
+      <label for="a_phone">Mobile number</label>
+      <input id="a_phone" type="tel" inputmode="tel" autocomplete="tel">
+    </div>
+    <label for="a_email">Email</label>
+    <input id="a_email" type="email" autocomplete="username">
+    <label for="a_pass">Password</label>
+    <input id="a_pass" type="password" autocomplete="current-password">
+    <p class="adm-msg" id="amsg" role="alert"></p>
+    <button class="btn" id="doAuth">Log in</button>
+    <p class="note" style="margin:14px 0 0"><a href="#" id="forgot">Forgot your password?</a></p>
+  </div>
+
+  <div id="resetBox" class="adm-card adm-login" hidden>
+    <h2>Set a new password</h2>
+    <label for="r_pass">New password (at least 8 characters)</label>
+    <input id="r_pass" type="password" autocomplete="new-password">
+    <p class="adm-msg" id="rmsg" role="alert"></p>
+    <button class="btn" id="doReset">Save password</button>
+  </div>
+
+  <div id="acctBox" hidden>
+    <div class="adm-card">
+      <div class="adm-bar"><div><h2 id="who">My orders</h2><p class="sub" id="mail" style="margin:0"></p></div><button class="btn ghost sm" id="logout">Log out</button></div>
+    </div>
+    <div class="adm-card">
+      <h2>My orders</h2>
+      <div id="orders" style="margin-top:10px"><p class="empty">Loading...</p></div>
+    </div>
+  </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="config.js"></script>
+<script src="supa.js"></script>
+<script src="account.js"></script>
+</body>
+</html>
