@@ -13,7 +13,7 @@
 <div class="wrap">
   <header>
     <div class="logo">Petal &amp; Stem</div>
-    <div class="nav"><a href="#order">Your order (<span id="count">0</span>)</a></div>
+    <div class="nav"><a id="acct" href="account.html">Log in</a><a href="#order">Your order (<span id="count">0</span>)</a></div>
   </header>
 
   <div class="hero">
@@ -40,6 +40,8 @@
         <div id="cart"></div>
       </div>
       <div class="panel">
+        <div id="gate" class="gate" hidden><strong>Log in to place your order.</strong> We save every order in your account so you can see it later.<div class="gate-links"><a class="btn sm" href="account.html?next=index.html%23order">Log in or sign up</a></div></div>
+        <div id="done" class="gate ok" hidden role="status"></div>
         <label for="name">Your name</label>
         <input id="name" autocomplete="name">
         <label for="phone">Your phone number</label>
@@ -54,8 +56,8 @@
         <textarea id="msg"></textarea>
         <p class="note">We deliver in <span class="city">Mumbai</span> only, and orders need at least <span class="lead">3</span> days’ notice. Payment is arranged with us on WhatsApp.</p>
         <p class="err" id="err" role="alert"></p>
-        <p class="note">WhatsApp will open with your order ready. Press Send there to place it.</p>
-        <button class="btn wa" id="send">Continue on WhatsApp to place order</button>
+        <p class="note">We save your order, then WhatsApp opens with the details ready. Press Send there so we can confirm it with you.</p>
+        <button class="btn wa" id="send">Place order</button>
       </div>
     </div>
   </section>
@@ -68,6 +70,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <script src="config.js"></script>
+<script src="supa.js"></script>
 <script src="script.js"></script>
 </body>
 </html>
